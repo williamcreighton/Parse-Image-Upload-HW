@@ -13,6 +13,10 @@ $('.post-upload-button').click(function(){
 
     var fileUploadControl = $('.postUpload')[0];
 
+    // this 'if' statement is saying that if the length of the files associated with
+    // fileUploadControl are > 0 then there is a file waiting to be uploaded and the
+    // function can proceed.
+
     if (fileUploadControl.files.length > 0) {
         var file = fileUploadControl.files[0];
         var name = 'photo.jpg';
@@ -20,24 +24,36 @@ $('.post-upload-button').click(function(){
         var parseFile = new Parse.File(name, file);
         parseFile.save().then(function(){
 
+            // Here, the variable 'post' creates a new instance of the Parse.Object
+            // variable 'Post' and has the key-value pairs of 'postCaption' and 
+            // 'postPhoto' set to it.
+
             var post = new Post();
             post.set({
                 'postCaption' : $('.postCaptionText'),
                 'postPhoto'   : parseFile.url()
             });
 
-            post.save().done(function(){
+            // 
 
+            post.save().done(function(){
+                  console.log('I\'ve been saved!')
             });
+
+            app.collection.add(post);
 
         });
     }
 });
 
 
-// Parse.Object ≈ Backbone.Model
+// Parse.Object ≈ Backbone.Model - Each Parse.Object is an instance of a 
+// specific subclass ...
 
 var Post = Parse.Object.extend({
+    
+    // with a class name that you can use to distinguish different sorts of data.
+    
     className: 'post'
 });
 
@@ -48,7 +64,7 @@ var PostCollection = Parse.Collection.extend({
 });
 
 
-//
+// Parse.View to Load Thumbnail Grid
 
 console.log('Thumbnail Grid View Script Loaded');
 
@@ -82,6 +98,24 @@ var ThumbnailView = Parse.View.extend({
     // }
 
 });
+
+
+// 
+
+var AppView = Parse.View.extend({
+    initialize: function () {
+        this.collection = new PostCollection();
+        this.collection.on('add', this.addPost);
+        this.collection.fetch({add:true});
+    },
+
+    addPost: function (model){
+        new ThumbnailView({model: model});
+    }
+
+});
+
+var app = new AppView();
 
 
 

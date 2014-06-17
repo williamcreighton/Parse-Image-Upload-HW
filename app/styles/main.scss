@@ -16,6 +16,11 @@ nav {
 }
 
 .container {
+    position: relative;
+    width: 100%;
+}
+
+.thumbnails-container {
     width: 960px;
     height: 600px;
     border: 1px solid red;
