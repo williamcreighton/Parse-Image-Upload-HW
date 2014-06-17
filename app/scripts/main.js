@@ -40,7 +40,7 @@ $('.post-upload-button').click(function(){
         var parseFile = new Parse.File(name, file);
         parseFile.save().then(function(){
 
-            console.log('I\'ve been saved!')
+            console.log('I\'ve been saved!');
 
             // Here, the variable 'post' creates a new instance of the Parse.Object
             // variable 'Post' and has the key-value pairs of 'postCaption' and 
@@ -51,12 +51,12 @@ $('.post-upload-button').click(function(){
             //     'postCaption' : $('.postCaptionText'),
             //     'postPhoto'   : parseFile.url()
 
-            var post = new Parse.Object("Post");
-            post.set('postCaption', "Joe Smith");
+            var post = new Parse.Object('Post');
+            post.set('postCaption', 'This Should Be Caption Text');
             post.set('postPhoto', parseFile.url());
             post.save();
 
-            });
+        });
 
             // 
 
@@ -90,11 +90,13 @@ var ThumbnailView = Parse.View.extend({
 
     initialize: function(){
 
-        this.listenTo(this.model, 'change', this.render);
-        this.listenTo(this.model, 'destroy', this.remove);
+        // this.listenTo(this.model, 'change', this.render);
+        // this.listenTo(this.model, 'destroy', this.remove);
 
-        $('.thumbnails-container').prepend(this.el);
+        $('.thumbnails-container').append(this.el);
         this.render();
+        var postPic = this.model.get('postPhoto');
+        this.$el.find('img').attr('src', postPic);
     },
 
     render: function(){
@@ -110,22 +112,43 @@ var ThumbnailView = Parse.View.extend({
 });
 
 
-// 
+//
 
-var AppView = Parse.View.extend({
-    initialize: function () {
-        this.collection = new PostCollection();
-        this.collection.on('add', this.addPost);
-        this.collection.fetch({add:true});
-    },
+console.log('Create New Instances Script Loaded');
 
-    addPost: function (model){
-        new ThumbnailView({model: model});
-    }
+var posts = new PostCollection();
+
+posts.fetch().done(function(){
+  
+  posts.models.reverse();
+
+  posts.each(function(posts){
+
+    new ThumbnailView({model: Post});
+
+  });
 
 });
 
-var app = new AppView();
+
+// Attempting to understand the Fetch/Retrieval process
+// using @gingerrific's code. This goes back to the idea
+// of using an 'AppView' - note to follow up.
+
+// var AppView = Parse.View.extend({
+//     initialize: function () {
+//         this.collection = new PostCollection();
+//         this.collection.on('add', this.addPost);
+//         this.collection.fetch({add:true});
+//     },
+
+//     addPost: function (model){
+//         new ThumbnailView({model: model});
+//     }
+
+// });
+
+// var app = new AppView();
 
 
 
