@@ -2,6 +2,22 @@
 
 Parse.initialize('8kYoQFRTqcpqpdaAm0QNPKMtjsQBuYRdmxS0VJNK', 'MALXhvfAMThpiDHZVxnEIJvJ6FSNJDwR4blEojl5');
 
+// Parse.Object ≈ Backbone.Model - Each Parse.Object is an instance of a 
+// specific subclass ...
+
+var Post = Parse.Object.extend({
+    
+    // with a class name that you can use to distinguish different sorts of data.
+    
+    className: 'post'
+});
+
+// Parse.Collection ≈ Backbone.Collection
+
+var PostCollection = Parse.Collection.extend({
+    model: Post
+});
+
 
 // Clicking post-upload-button checks to see if there is a file
 // (fileUploadControl.files.length > 0) selected and available 
@@ -24,44 +40,38 @@ $('.post-upload-button').click(function(){
         var parseFile = new Parse.File(name, file);
         parseFile.save().then(function(){
 
+            console.log('I\'ve been saved!')
+
             // Here, the variable 'post' creates a new instance of the Parse.Object
             // variable 'Post' and has the key-value pairs of 'postCaption' and 
             // 'postPhoto' set to it.
 
-            var post = new Post();
-            post.set({
-                'postCaption' : $('.postCaptionText'),
-                'postPhoto'   : parseFile.url()
+            // var post = new Post();
+            // post.set({
+            //     'postCaption' : $('.postCaptionText'),
+            //     'postPhoto'   : parseFile.url()
+
+            var post = new Parse.Object("Post");
+            post.set('postCaption', "Joe Smith");
+            post.set('postPhoto', parseFile.url());
+            post.save();
+
             });
 
             // 
 
-            post.save().done(function(){
-                  console.log('I\'ve been saved!')
-            });
+            // post.save().done(function(){
+            //       console.log('I\'ve been saved!')
+            // });
 
-            app.collection.add(post);
+            // app.collection.add(post);
 
-        });
+        // });
     }
 });
 
 
-// Parse.Object ≈ Backbone.Model - Each Parse.Object is an instance of a 
-// specific subclass ...
 
-var Post = Parse.Object.extend({
-    
-    // with a class name that you can use to distinguish different sorts of data.
-    
-    className: 'post'
-});
-
-// Parse.Collection ≈ Backbone.Collection
-
-var PostCollection = Parse.Collection.extend({
-    model: Post
-});
 
 
 // Parse.View to Load Thumbnail Grid
@@ -70,7 +80,7 @@ console.log('Thumbnail Grid View Script Loaded');
 
 var ThumbnailView = Parse.View.extend({
 
-    className: 'thumbnail',
+    className: 'thumbnails-container',
 
     template: _.template($('.thumbnail-template').text()),
 
